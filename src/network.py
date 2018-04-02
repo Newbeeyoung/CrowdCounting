@@ -71,52 +71,29 @@ def load_net(fname, net):
         param = torch.from_numpy(np.asarray(h5f[k]))         
         v.copy_(param)
 
-def np_to_variable(x, is_cuda=True, is_training=False, is_density=False, dtype=torch.FloatTensor):
+def np_to_variable(x, is_training,is_cuda=True, is_density=False, dtype=torch.FloatTensor):
     ## Orginal One
     v = torch.from_numpy(x)
 
-    # gray image
-    # v.unsqueeze_(0)
-    # v.unsqueeze_(0)
-    if is_density:
-        v.unsqueeze_(0)
-        v.unsqueeze_(0)
-    else:
-        if len(v.shape) == 3:
-            if v.shape[2] == 3:
-                # rgb image
-                v.unsqueeze_(0)
-                v = v.permute(0, 3, 1, 2)
-    # elif len(v.shape) == 2:
-    #     v.unsqueeze_(0)
-    #     v.unsqueeze_(0)
-    # # print(v.type)
-
-
-
-    # gray image
-    # v.unsqueeze_(0)
-    # v.unsqueeze_(0)
-    #
-    # if len(x.shape) == 3:
-    #     if x.shape[2] == 3:
-    #         v = torch.from_numpy(x)
-    #         # rgb image
-    #         v.unsqueeze_(0)
-    #         v = v.permute(0, 3, 1, 2)
-    # elif len(x.shape) == 2:
-    #     x=np.stack((x,)*3,-1)
-    #     x=np.transpose(x,(2,0,1))
-    #     v=torch.from_numpy(x)
-    #     v.unsqueeze_(0)
-    # print(v.type)
-
-
     if is_training:
+        if is_density:
+            v.unsqueeze_(0)
+            v = v.permute(1, 0, 2, 3)
+        else:
+            v = v.permute(0, 3, 1, 2)
         v = Variable(v.type(dtype))
     else:
-        v = Variable(v.type(dtype), requires_grad = False, volatile = True)
+        if is_density:
+            v.unsqueeze_(0)
+            v.unsqueeze_(0)
+        else:
+            if len(v.shape) == 3:
+                if v.shape[2] == 3:
+                    v.unsqueeze_(0)
+                    v = v.permute(0, 3, 1, 2)
 
+        # v = Variable(v.type(dtype), requires_grad = False, volatile = True)
+        v = Variable(v.type(dtype))
     if is_cuda:
         v = v.cuda()
     return v

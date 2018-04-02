@@ -9,20 +9,20 @@ class CrowdCounter(nn.Module):
         self.DME = MCNN()
 
         self.alpha = 0.0001
-        self.loss_mse = nn.MSELoss(size_average=False)
-        self.loss_L1 = nn.L1Loss(size_average=False)
+        self.loss_mse = nn.MSELoss(size_average=True)
+        self.loss_L1 = nn.L1Loss(size_average=True)
         # self.loss_fn = 0.5 * nn.MSELoss() + self.alpha * nn.L1Loss()
 
     @property
     def loss(self):
         return self.loss_all
     
-    def forward(self,  im_data, gt_data=None):        
-        im_data = network.np_to_variable(im_data, is_cuda=True, is_density=False, is_training=self.training)
+    def forward(self,  im_data, gt_data,is_training):
+        im_data = network.np_to_variable(im_data, is_cuda=True, is_density=False, is_training=is_training)
         density_map = self.DME(im_data)
         
-        if self.training:                        
-            gt_data = network.np_to_variable(gt_data, is_cuda=True, is_density=True,is_training=self.training)
+        if is_training:
+            gt_data = network.np_to_variable(gt_data, is_cuda=True, is_density=True,is_training=is_training)
             self.loss_all = self.build_loss(density_map, gt_data)
             # self.loss_mse = self.build_loss(density_map, gt_data)
             

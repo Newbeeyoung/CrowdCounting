@@ -63,7 +63,7 @@ def single_img_estimate(input_path):
         im_data = blob['data']
         gt_data = blob['gt_density']
         t.tic()
-        density_map = net(im_data, gt_data)
+        density_map = net(im_data, gt_data,False)
         density_map = density_map.data.cpu().numpy()
         duration=t.toc()
         print ("time duration:"+str(duration))

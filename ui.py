@@ -23,15 +23,6 @@ class UI:
         menu.add_cascade(label="File",menu=file)
 
         self.input_path=''
-        # #Define label of input image
-        img_or=Image.open('a.png')
-        img_rs=img_or.resize((1,1), Image.ANTIALIAS)
-        img_tk= ImageTk.PhotoImage(img_rs)
-        self.in_image= tk.Label(master, image=img_tk)
-        self.in_image.Image = img_tk
-        self.in_image.pack()
-        self.in_image.place(x=0,y=100)
-        # #Define estimate button
         self.button=tk.Button(master,text="Estimate",command=self.estimate)
         self.button.pack()
         self.button.place(x=890,y=480)
@@ -56,14 +47,14 @@ class UI:
                                   filetypes=(("jpeg files","*.jpg"),("png files","*.png"),("all files","*.*")),
                                   title="Choose File")
 
-
+        #Show original image
         img_or=Image.open(self.input_path)
-
         img_rs=img_or.resize((self.w,self.h),Image.ANTIALIAS)
-        img_tk = ImageTk.PhotoImage(img_rs)
-        self.in_image.configure(image=img_tk)
+        img_tk= ImageTk.PhotoImage(img_rs)
+        self.in_image= tk.Label(window, image=img_tk)
         self.in_image.Image = img_tk
-
+        self.in_image.pack()
+        self.in_image.place(x=0,y=100)
         #Show name of original image
         var5=tk.StringVar()
         ori_name=tk.Label(window,textvariable=var5,height=2,width=20,font=8)
@@ -71,7 +62,7 @@ class UI:
         ori_name.place(x=20,y=30)
 
     def estimate(self):
-
+        #Call estimate function
         et_path,gt_path,mae,mse,gt_count,et_count=single_img_estimate(self.input_path)
 
         #Show Combined Image
@@ -145,7 +136,7 @@ class UI:
         estimate_dm=cv2.imread(estimate)
         estimate_dm=cv2.resize(estimate_dm,(input_image.shape[1],input_image.shape[0]))
 
-        combined_image=cv2.addWeighted(input_image,0.5,estimate_dm,0.5,0)
+        combined_image=cv2.addWeighted(input_image,0.4,estimate_dm,0.6,0)
         return combined_image
 
 
